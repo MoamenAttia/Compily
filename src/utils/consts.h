@@ -25,7 +25,7 @@ enum ControlFlow {
     CONTINUE,
     BREAK,
     RETURN,
-    DEFAULt,
+    DEFAULT,
 };
 
 // Enum for operators https://www.geeksforgeeks.org/operators-c-c/

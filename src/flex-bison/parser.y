@@ -4,42 +4,24 @@
 	#include <cmath>
 	#include <cstdio>
 	#include <iostream>
+	#include "utils/utils.h"
 
-	#pragma warning (disable: 4005)
+	// Variables and functions.
 
-	// this function will be generated
-	// by flex
-	extern int yylex(); // lexical analyzer
-
-	 // we have to code this function
+	extern Location curLoc;
+	extern int yylex();
 	extern void yyerror(const char*);
+
 
 	using namespace std;
 %}
 
-%define api.value.type { double }
 
-%token NUM, INTEGER_NUMBER
+%token INTEGER_NUMBER, NEW_LINE, IDENTIFIER, INT, PLUS, SEMI_COLON, ASSIGN
 
-%left '-' '+'
-%left '*' '/'
+%%
 
-%%		/* the grammars here */
-
-input: %empty
-	| input line
-	;
-
-line: '\n'
-	| exp '\n'	{ cout << " =>" << $1 << endl; }
-	;
-
-exp: NUM		   { $$ = $1; }
-	| exp '+' exp  { $$ = $1 + $3; }
-	| exp '-' exp  { $$ = $1 - $3; }
-	| exp '*' exp  { $$ = $1 * $3; }
-	| exp '/' exp  { $$ = $1 / $3; }
-	| '(' exp ')'  { $$ = $2; }
-	;
+program: INT IDENTIFIER ASSIGN IDENTIFIER PLUS IDENTIFIER SEMI_COLON
+		;
 
 %%

@@ -5,7 +5,7 @@
 	#include <iostream>
 	#include <cmath>
 	#include <string>
-	#include "utils/consts.h"
+	#include "utils/utils.h"
 	#include "parser.h"
 
 	using namespace std;
@@ -17,8 +17,7 @@
 	void consumeToken(string type);
 	void yyerror(string s);
 
-
-	int lineNumber = 1, cursor = 0;
+	Location curLoc;
 %}
 
 
@@ -115,28 +114,16 @@ STRING_VALUE				(\"(.*)\")
 COMMENT						"//(.)*"
 
 
-/*
-// ----------------------------------------------------------------------------------- //
-// SPECIALS
-*/
 
-LEFT_CURLY_BRACE			"{"
-RIGHT_CURLY_BRACE			"}"
-LEFT_PARENTHESES			"("
-RIGHT_PARENTHESES			")"
-LEFT_SQUARE_BRACKET			"["
-RIGHT_SQUARE_BRACKET		"]"
-SINGLE_QUOTE				(')
-DOUBLE_QUOTE				"\""
-SEMI_COLON					";"
 NEW_LINE					"\n"
+
 INVALID						.
 
 
 
 %%
 
-{INT}						{ consumeToken("INT"); }
+{INT}						{ consumeToken("INT"); return INT; }
 {BOOL}						{ consumeToken("BOOL"); }
 {CHAR}						{ consumeToken("CHAR"); }
 {FLOAT}						{ consumeToken("FLOAT"); }
@@ -158,53 +145,32 @@ INVALID						.
 {CONTINUE}					{ consumeToken("CONTINUE"); }
 
 
-{PLUS}						{ consumeToken("PLUS"); return '+'; }
-{MINUS}						{ consumeToken("MINUS"); }
-{ASSIGN}					{ consumeToken("ASSIGN"); }
-{MULTIPLICATION}			{ consumeToken("MULTIPLICATION"); }
-{DIVISION}					{ consumeToken("DIVISION"); }
-{MODOLUS}					{ consumeToken("MODOLUS"); }
-{BITWISE_AND}				{ consumeToken("BITWISE_AND"); }
-{BITWISE_OR}				{ consumeToken("BITWISE_OR"); }
-{BITWISE_XOR}				{ consumeToken("BITWISE_XOR"); }
-{BITWISE_NOT}				{ consumeToken("BITWISE_NOT"); }
-{AND}						{ consumeToken("AND"); }
-{OR}						{ consumeToken("OR"); }
-{NOT}						{ consumeToken("NOT"); }
-{GREATER_THAN}				{ consumeToken("GREATER_THAN"); }
-{GREATER_THAN_OR_EQUAL}		{ consumeToken("GREATER_THAN_OR_EQUAL"); }
-{LESS_THAN}					{ consumeToken("LESS_THAN"); }
-{LESS_THAN_OR_EQUAL}		{ consumeToken("LESS_THAN_OR_EQUAL"); }
-{EQUAL}						{ consumeToken("EQUAL"); }
-{NOT_EQUAL}					{ consumeToken("NOT_EQUAL"); }
-{INC}						{ consumeToken("INC"); }
-{DEC}						{ consumeToken("DEC"); }
+
+[+-=*/%&|^~><!{}()[]\'\";]		{ consumeToken(string(yytext)); return *yytext; }
+"&&"							{ consumeToken("AND"); }
+"||"							{ consumeToken("OR"); }
+">="							{ consumeToken("GE"); }
+"<="							{ consumeToken("LE"); }
+"!="							{ consumeToken("NE"); }
+"=="							{ consumeToken("ISEQ"); }
+"++"							{ consumeToken("INC"); }
+"--"							{ consumeToken("DEC"); }
 
 
-
-{LEFT_CURLY_BRACE}			{ consumeToken("LEFT_CURLY_BRACE"); }
-{RIGHT_CURLY_BRACE}			{ consumeToken("RIGHT_CURLY_BRACE"); }
-{LEFT_PARENTHESES}			{ consumeToken("LEFT_PARENTHESES"); }
-{RIGHT_PARENTHESES}			{ consumeToken("RIGHT_PARENTHESES"); }
-{LEFT_SQUARE_BRACKET}		{ consumeToken("LEFT_SQUARE_BRACKET"); }
-{RIGHT_SQUARE_BRACKET}		{ consumeToken("RIGHT_SQUARE_BRACKET"); }
-{SINGLE_QUOTE}				{ consumeToken("SINGLE_QUOTE"); }
-{DOUBLE_QUOTE}				{ consumeToken("DOUBLE_QUOTE"); }
+\n							{ curLoc.lineNo++; curLoc.colNo = 0; }
+\t							{ curLoc.colNo += 4; }
+" "							{ curLoc.colNo++; }
 
 
-{INTEGER_NUMBER}			{ consumeToken("INTEGER_NUMBER"); yylval = atoi(yytext); return INTEGER_NUMBER; }
+{INTEGER_NUMBER}			{ consumeToken("INTEGER_NUMBER"); yylval = atoi(yytext); }
 {FLOAT_NUMBER}				{ consumeToken("FLOAT_NUMBER"); }
 
-{CONST}						{ consumeToken("CONST"); }
 {FALSE}						{ consumeToken("FALSE"); }
 {TRUE}						{ consumeToken("TRUE"); }
 
-{IDENTIFIER}				{ consumeToken("IDENTIFIER"); }
+{IDENTIFIER}				{ consumeToken("IDENTIFIER"); return IDENTIFIER; }
 {STRING_VALUE}				{ consumeToken("STRING_VALUE"); }
 {COMMENT}					{ consumeToken("COMMENT"); }
-
-{NEW_LINE}					{ consumeToken("NEW_LINE"); }
-{WHITESPACE}				{ consumeToken("WHITESPACE"); }
 
 
 {INVALID}					{ consumeToken("INVALID"); yyerror("Unknown Character"); }
@@ -212,18 +178,18 @@ INVALID						.
 %%
 
 void yyerror(string s) {
-	cout << "lexical error: " << s << ", at line: " << lineNumber << ", col: " << cursor << endl;
+	cout << "lexical error: " << s << ", at line: " << curLoc.lineNo << ", col: " << curLoc.colNo << endl;
 }
 
 void consumeToken(string type) {
-	if(type == "NEW_LINE"){
-		lineNumber++;
-		cursor = 0;
-	} else if(type == "WHITESPACE"){
-		cursor += yyleng;
+	if(type == "\n"){
+		curLoc.lineNo++;
+		curLoc.colNo = 0;
+	} else if(type == " "){
+		curLoc.colNo += yyleng;
 	} else if(type == "INVALID"){
-		cursor++;
+		curLoc.colNo++;
 	} else {
-		cursor += yyleng;
+		curLoc.colNo += yyleng;
 	}
 }
