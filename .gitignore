@@ -1,0 +1,15 @@
+# vscode
+**/.vscode/*
+
+# visual studio
+**/Debug
+**/.vs
+
+# generated files ( automatically updated, no need to save them )
+**/lexer.cpp
+**/parser.cpp
+**/parser.h
+
+# output ( linux, windows )
+**/*.o
+**/*.exe
