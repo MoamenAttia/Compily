@@ -92,7 +92,6 @@ INTEGER_NUMBER				{DIGIT}+
 FLOAT_NUMBER				(({DIGIT}*\.{DIGIT}+)|({DIGIT}+\.{DIGIT}+))
 
 
-
 /*
 // ----------------------------------------------------------------------------------- //
 // RESERVED WORDS
@@ -145,8 +144,7 @@ INVALID						.
 {CONTINUE}					{ consumeToken("CONTINUE"); }
 
 
-
-[+-=*/%&|^~><!{}()[]\'\";]		{ consumeToken(string(yytext)); return *yytext; }
+[-+=;*/%&|^~><!{}()[\]]			{ consumeToken(string(yytext)); return *yytext; }
 "&&"							{ consumeToken("AND"); }
 "||"							{ consumeToken("OR"); }
 ">="							{ consumeToken("GE"); }
@@ -182,6 +180,7 @@ void yyerror(string s) {
 }
 
 void consumeToken(string type) {
+	cout << "Token: " << type << "\n";
 	if(type == "\n"){
 		curLoc.lineNo++;
 		curLoc.colNo = 0;

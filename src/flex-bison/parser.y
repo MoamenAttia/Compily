@@ -17,11 +17,13 @@
 %}
 
 
-%token INTEGER_NUMBER, NEW_LINE, IDENTIFIER, INT, PLUS, SEMI_COLON, ASSIGN
+%token INT INTEGER_NUMBER NEW_LINE IDENTIFIER
+
+%token '+' '-' '=' '*' '/' '%' '&' '|' '^' '~' '>' '<' '!' '{' '}' '(' ')' '[' ']' ';' '\'' '\"'
 
 %%
 
-program: INT IDENTIFIER ASSIGN IDENTIFIER PLUS IDENTIFIER SEMI_COLON
+program: INT IDENTIFIER '=' INTEGER_NUMBER ';'
 		;
 
 %%
