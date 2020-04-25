@@ -30,7 +30,7 @@ enum ControlFlow {
 
 // Enum for operators https://www.geeksforgeeks.org/operators-c-c/
 
-enum Operators {
+enum Operator {
     PLUS = 30,              // +
     MINUS,                  // -
     ASSIGN,                 // =
