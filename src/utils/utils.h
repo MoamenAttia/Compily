@@ -8,27 +8,20 @@ struct Location {
 };
 
 // struct for the token holding the location and the name of the token.
-struct Token {
+struct IdentifierToken {
 	string type; // type: int, float, ...
     string value; // value: 14, 14.04, ...
     Location loc;
 };
 
 
-
-
-
-
-
-
-
-
-
-
 // Union for the values.
-union Value {
-    int intValue;
-    float floatValue;
-    bool booleanValue;
-	string stringValue;
+struct Value {
+    int intVal;
+    float floatVal;
+    bool booleanVal;
+	string stringVal;
 };
+
+
+

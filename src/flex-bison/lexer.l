@@ -123,52 +123,30 @@ INVALID						.
 %%
 
 {INT}						{ consumeToken("INT"); return INT; }
-{BOOL}						{ consumeToken("BOOL"); }
-{CHAR}						{ consumeToken("CHAR"); }
-{FLOAT}						{ consumeToken("FLOAT"); }
-{CONST}						{ consumeToken("CONST"); }
-{VOID}						{ consumeToken("VOID"); }
-{STRING}					{ consumeToken("STRING"); }
+{BOOL}						{ consumeToken("BOOL"); return BOOL; }
+{FLOAT}						{ consumeToken("FLOAT"); return FLOAT; }
+{CONST}						{ consumeToken("CONST"); return CONST; }
+{STRING}					{ consumeToken("STRING"); return STRING; }
 
-
-
-{IF}						{ consumeToken("IF"); }
-{ELSE}						{ consumeToken("ELSE"); }
-{WHILE}						{ consumeToken("WHILE"); }
-{FOR}						{ consumeToken("FOR"); }
-{SWITCH}					{ consumeToken("SWITCH"); }
-{CASE}						{ consumeToken("CASE"); }
-{DEFAULT}					{ consumeToken("DEFAULt"); }
-{DO}						{ consumeToken("DO"); }
-{BREAK}						{ consumeToken("BREAK"); }
-{CONTINUE}					{ consumeToken("CONTINUE"); }
-
-
-[-+=;*/%&|^~><!{}()[\]]			{ consumeToken(string(yytext)); return *yytext; }
-"&&"							{ consumeToken("AND"); }
-"||"							{ consumeToken("OR"); }
-">="							{ consumeToken("GE"); }
-"<="							{ consumeToken("LE"); }
-"!="							{ consumeToken("NE"); }
-"=="							{ consumeToken("ISEQ"); }
-"++"							{ consumeToken("INC"); }
-"--"							{ consumeToken("DEC"); }
-
+[-+=;*/%&|^~><!{}()[\]]		{ consumeToken(string(yytext)); return *yytext; }
+"&&"						{ consumeToken("AND"); return AND; }
+"||"						{ consumeToken("OR"); return OR; }
+">="						{ consumeToken("GE"); return GE; }
+"<="						{ consumeToken("LE"); return LE; }
+"!="						{ consumeToken("NOT_EQUAL"); return NOT_EQUAL; }
+"=="						{ consumeToken("EQUAL"); return EQUAL; }
 
 \n							{ curLoc.lineNo++; curLoc.colNo = 0; }
 \t							{ curLoc.colNo += 4; }
 " "							{ curLoc.colNo++; }
 
 
-{INTEGER_NUMBER}			{ consumeToken("INTEGER_NUMBER"); yylval = atoi(yytext); }
-{FLOAT_NUMBER}				{ consumeToken("FLOAT_NUMBER"); }
+{INTEGER_NUMBER}			{ consumeToken("INTEGER_NUMBER"); Value val; val.intVal = atoi(yytext); yylval.iValue = val; return INTEGER_NUMBER; }
+{FLOAT_NUMBER}				{ consumeToken("FLOAT_NUMBER"); return INTEGER_NUMBER; }
 
-{FALSE}						{ consumeToken("FALSE"); }
-{TRUE}						{ consumeToken("TRUE"); }
 
 {IDENTIFIER}				{ consumeToken("IDENTIFIER"); return IDENTIFIER; }
-{STRING_VALUE}				{ consumeToken("STRING_VALUE"); }
-{COMMENT}					{ consumeToken("COMMENT"); }
+{STRING_VALUE}				{ consumeToken("STRING_VALUE"); return STRING_VALUE; }
 
 
 {INVALID}					{ consumeToken("INVALID"); yyerror("Unknown Character"); }
