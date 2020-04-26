@@ -25,7 +25,7 @@ build:
 	@make -s comp
 run:
 	@make -s clear
-	./out/compily.out tests/test_case0.cpp -o tests/out.quad -s tests/symbol_table.txt
+	./out/compily.out tests/test_case0.cpp
 
 all:
 	@make -s build
