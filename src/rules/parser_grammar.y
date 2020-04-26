@@ -50,6 +50,8 @@ StatementNode* programRoot = NULL;
 %token <location> TYPE_FLOAT
 %token <location> TYPE_BOOL
 %token <location> TYPE_STRING
+%token <location> TYPE_CHAR
+
 
 // Keywords
 %token <location> CONST
@@ -155,6 +157,7 @@ type:               TYPE_INT        { $$ = new TypeNode($1, DTYPE_INT); }
     |               TYPE_FLOAT      { $$ = new TypeNode($1, DTYPE_FLOAT); }
     |               TYPE_BOOL       { $$ = new TypeNode($1, DTYPE_BOOL); }
     |               TYPE_STRING     { $$ = new TypeNode($1, DTYPE_STRING); }
+    |               TYPE_CHAR       { $$ = new TypeNode($1, DTYPE_CHAR); }
     ;
 
 value:              INTEGER         { $$ = new ValueNode($1.loc, DTYPE_INT, $1.value);  }

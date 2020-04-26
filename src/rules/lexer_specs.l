@@ -7,15 +7,11 @@
 
 using namespace std;
 
-//
 // Functions prototypes
-//
 void saveLocation();
 void saveToken();
 
-//
 // Global variables
-//
 Location curLoc = {1,0,0};
 %}
 
@@ -42,7 +38,7 @@ LETTER              [a-zA-Z_]
 IDENTIFIER          {LETTER}({LETTER}|{DIGIT})*
 LINE_COMMENT        "//"(.)*
 STRING_VALUE	    (\"(.*)\")
-
+CHAR_VALUE          (\'.\')
 
 %%
 
@@ -68,6 +64,7 @@ STRING_VALUE	    (\"(.*)\")
 "bool"                     saveLocation(); return TYPE_BOOL;
 "const"                    saveLocation(); return CONST;
 "string"                   saveLocation(); return TYPE_STRING;
+"char"                     saveLocation(); return TYPE_CHAR;
 
 %{
 // Operators
@@ -86,6 +83,7 @@ STRING_VALUE	    (\"(.*)\")
 "false"                    saveToken(); return BOOL;
 {IDENTIFIER}               saveToken(); return IDENTIFIER;
 {STRING_VALUE}             saveToken(); return STRING_VALUE;
+
 %{
 // Others
 %}
