@@ -61,11 +61,6 @@ bool VarDeclarationNode::analyze(ScopeContext* context) {
         ret = false;
     }
 
-    SwitchNode* switchStmt = context->getSwitchScope();
-
-    if (switchStmt != NULL && value != NULL) {
-        switchStmt->initializedVars.push_back(this);
-    }
 
     return ret;
 }

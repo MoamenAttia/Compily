@@ -74,6 +74,15 @@ public:
     }
 
     /**
+     * Checks whether the current scope is the global scope within this context or not.
+     *
+     * @return {@code true} if the current scope is the global scope; {@code false} otherwise.
+     */
+    bool isGlobalScope() {
+        return false;
+    }
+
+    /**
      * Adds a new scope to this context.
      *
      * @param type the type of the scope to add.
@@ -101,51 +110,13 @@ public:
                     log("function '" + sym->declaredHeader() + "' is never called", sym->ident->loc, LOG_WARNING);
                 }
             }
-            
+
             aliases[sym->ident->name]--;
         }
 
         delete scope;
     }
 
-    /**
-     * Checks whether the current scope is the global scope within this context or not.
-     *
-     * @return {@code true} if the current scope is the global scope; {@code false} otherwise.
-     */
-    bool isGlobalScope() {
-        return false;
-    }
-
-    /**
-     * Searches for the inner most function scope.
-     *
-     * @return a pointer on the found function scope, or {@code NULL} if not available.
-     */
-    FunctionNode* getFunctionScope() {
-        for (int i = (int) scopes.size() - 1; i >= 0; --i) {
-            if (scopes[i]->type == SCOPE_FUNCTION) {
-                return (FunctionNode*) scopes[i]->ptr;
-            }
-        }
-
-        return NULL;
-    }
-
-    /**
-     * Searches for the inner most switch scope.
-     *
-     * @return a pointer on the found switch scope, or {@code NULL} if not available.
-     */
-    SwitchNode* getSwitchScope() {
-        for (int i = (int) scopes.size() - 1; i >= 0; --i) {
-            if (scopes[i]->type == SCOPE_SWITCH) {
-                return (SwitchNode*) scopes[i]->ptr;
-            }
-        }
-
-        return NULL;
-    }
 
     /**
      * Declares a new symbol in the the lastly added scope in this context.
@@ -192,70 +163,6 @@ public:
         }
 
         return NULL;
-    }
-
-    /**
-     * Checks whether this context has a scope that can accept
-     * break statement or not. That is, a loop scope or switch scope.
-     *
-     * @return {@code true} if this context has a break scope, {@code false} otherwise.
-     */
-    bool hasBreakScope() {
-        for (int i = (int) scopes.size() - 1; i >= 0; --i) {
-            if (scopes[i]->type == SCOPE_LOOP || scopes[i]->type == SCOPE_SWITCH) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks whether this context has a scope that can accept
-     * case statement or not. That is, a switch scope.
-     *
-     * @return {@code true} if this context has a switch scope, {@code false} otherwise.
-     */
-    bool hasSwitchScope() {
-        for (int i = (int) scopes.size() - 1; i >= 0; --i) {
-            if (scopes[i]->type == SCOPE_SWITCH) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks whether this context has a scope that can accept
-     * continue statement or not. That is, a loop scope.
-     *
-     * @return {@code true} if this context has a continue scope, {@code false} otherwise.
-     */
-    bool hasLoopScope() {
-        for (int i = (int) scopes.size() - 1; i >= 0; --i) {
-            if (scopes[i]->type == SCOPE_LOOP) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks whether this context has a scope that can accept
-     * return statement or not. That is, a function scope.
-     *
-     * @return {@code true} if this context has a continue scope, {@code false} otherwise.
-     */
-    bool hasFunctionScope() {
-        for (int i = (int) scopes.size() - 1; i >= 0; --i) {
-            if (scopes[i]->type == SCOPE_FUNCTION) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
