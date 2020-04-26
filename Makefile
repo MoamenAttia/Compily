@@ -9,7 +9,7 @@ gen:
 	bison -d -o out/rules/parser.cpp out/rules/parser_grammar.y
 
 comp:
-	g++  -o out/compily.out \
+	g++ -g -o out/compily.out \
 		out/main.cpp \
 		out/parse_tree/statements/statement_analyzer.cpp \
 		out/parse_tree/statements/statement_generator.cpp \
