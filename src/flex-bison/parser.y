@@ -1,159 +1,172 @@
-%defines "parser.h"
-
 %{
-	#include <cmath>
-	#include <cstdio>
-	#include <iostream>
-	// Variables and functions.
-    #include "SyntaxTree/includes.h"
-	extern Location curLoc;
-	extern int yylex();
-	extern void yyerror(const char*);
+#include <iostream>
+#include <string>
 
+#include "../parse_tree/parse_tree.h"
 
-	using namespace std;
+using namespace std;
+
+//
+// External functions & variables
+//
+extern int yylex();
+extern Location curLoc;
+
+//
+// Functions prototypes
+//
+void yyerror(const char* s);
+
+//
+// Global variables
+//
+StatementNode* programRoot = NULL;
 %}
 
-
-
-/*
-// ----------------------------------------------------------------------------------- //
-// yyval
-*/
+// =====================================================================================================
+// Symbol Types
+// ============
 
 %union {
-	Value		            iValue; 		// for the identifiers.
-    Node*                   nPtr;
-    IdentifierToken         identifierToken;
-    DataType                dataType;
+    BlockNode*                  blockNode;
+    StatementNode*              stmtNode;
+    VarDeclarationNode*         varDeclNode;
+    MultiVarDeclarationNode*    multiVarDeclNode;
+    ExpressionNode*             exprNode;
+    TypeNode*                   typeNode;
+    ValueNode*                  valueNode;
+    IdentifierNode*             identifierNode;
+    StmtList*                   stmtList;
+    Token                       token;
+    Location                    location;
 }
 
-
-/*
-// ----------------------------------------------------------------------------------- //
-// TOKENS
-*/
-
-/* TERMINALS */
+// =====================================================================================================
+// Tokens Definition
+// =================
 
 // Data types
-%token INT
-%token FLOAT
-%token BOOL
-%token STRING
+%token <location> TYPE_INT
+%token <location> TYPE_FLOAT
+%token <location> TYPE_BOOL
+%token <location> TYPE_STRING
 
 // Keywords
-%token CONST
+%token <location> CONST
 
-// Operators
-%token INC
-%token DEC
-%token AND
-%token OR
-%token EQUAL
-%token NOT_EQUAL
-%token GE
-%token LE
+// Values
+%token <token> INTEGER
+%token <token> FLOAT
+%token <token> CHAR
+%token <token> BOOL
+%token <token> IDENTIFIER
 
-// Identifers and values
-%token <iValue> INTEGER_NUMBER
-%token <iValue> FLOAT_NUMBER
-%token <iValue> BOOL_VALUE
-%token <iValue> STRING_VALUE
-%token <identifierToken> IDENTIFIER
+// =====================================================================================================
+// Non-terminal Symbols Types
+// ==========================
+
+%type <blockNode>           program
+%type <stmtNode>            stmt
+%type <stmtList>            stmt_list
+%type <varDeclNode>         var_decl
+%type <multiVarDeclNode>    multi_var_decl
+%type <exprNode>            expression
+%type <typeNode>            type
+%type <valueNode>           value
+%type <identifierNode>      ident
+
+%type <location>            '-' '+' '*' '/' '%' '&' '|' '^' '~' '!' '<' '>' '=' '(' ')' '{' '}' '[' ']' ',' ':' ';'
 
 
-/* Syntax Tree */
-
-%type <nPtr> expression stmt_list stmt variable_decl multi_variable_decl
-%type <DataType> type;
-
-/*
-// ----------------------------------------------------------------------------------- //
+// =====================================================================================================
 // Precedence & Associativity
-*/
+// ==========================
 
+// Note that order matters here
 %right      '='
-%left       OR
-%left       AND
-%left       '|'
-%left       '^'
-%left       '&'
-%left       EQUAL NOT_EQUAL
-%left       LE GE '<' '>'
 %left       '-' '+'
-%left       '*' '/' '%'
-%right      '!' '~'
+%left       '*' '/'
+%right      '!'
 %right      U_PLUS U_MINUM
 
+%%
+
+// =====================================================================================================
+// Rules Section
+// =============
+
+program:            %empty                      { $$ = NULL; programRoot = new BlockNode(); }
+    |               stmt_list                   { $$ = NULL; programRoot = new BlockNode((*$1)[0]->loc, *$1); delete $1; }
+    ;
+
+stmt_list:          stmt                        { $$ = new StmtList(); $$->push_back($1); }
+    |               stmt_list stmt              { $$ = $1; $$->push_back($2); }
+    ;
+
+stmt:               ';'                         { $$ = new StatementNode($<location>1); }
+    |               expression ';'              { $$ = new ExprContainerNode($1->loc, $1); }
+    |               var_decl ';'                { $$ = $1; }
+    |               multi_var_decl ';'          { $$ = $1; }
+    ;
+
+// ------------------------------------------------------------
+//
+// Declaration Rules
+//
+
+var_decl:           type ident                              { $$ = new VarDeclarationNode($1, $2); }
+    |               CONST type ident                        { $$ = new VarDeclarationNode($2, $3, NULL, true); }
+    |               type ident '=' expression               { $$ = new VarDeclarationNode($1, $2, $4); }
+    |               CONST type ident '=' expression         { $$ = new VarDeclarationNode($2, $3, $5, true); }
+    ;
+
+multi_var_decl:     var_decl ',' ident                      { $$ = new MultiVarDeclarationNode($1); $$->addVar($3); }
+    |               var_decl ',' ident '=' expression       { $$ = new MultiVarDeclarationNode($1); $$->addVar($3, $5); }
+    |               multi_var_decl ',' ident                { $$ = $1; $$->addVar($3); }
+    |               multi_var_decl ',' ident '=' expression { $$ = $1; $$->addVar($3, $5); }
+
+// ------------------------------------------------------------
+//
+// Expression Rules
+//
+
+expression:         expression '=' expression               { $$ = new AssignOprNode($2, $1, $3); }
+    |               expression '+' expression               { $$ = new BinaryOprNode($2, OPR_ADD, $1, $3); }
+    |               expression '-' expression               { $$ = new BinaryOprNode($2, OPR_SUB, $1, $3); }
+    |               expression '*' expression               { $$ = new BinaryOprNode($2, OPR_MUL, $1, $3); }
+    |               expression '/' expression               { $$ = new BinaryOprNode($2, OPR_DIV, $1, $3); }
+    |               '+' expression %prec U_PLUS             { $$ = new UnaryOprNode($1, OPR_U_PLUS, $2); }
+    |               '-' expression %prec U_MINUM            { $$ = new UnaryOprNode($1, OPR_U_MINUS, $2); }
+    |               '!' expression                          { $$ = new UnaryOprNode($1, OPR_LOGICAL_NOT, $2); }
+    |               value                                   { $$ = $1; }
+    |               ident                                   { $$ = $1; }
+    ;
+
+
+
+
+// ------------------------------------------------------------
+//
+// Other Rules
+//
+
+type:               TYPE_INT        { $$ = new TypeNode($1, DTYPE_INT); }
+    |               TYPE_FLOAT      { $$ = new TypeNode($1, DTYPE_FLOAT); }
+    |               TYPE_BOOL       { $$ = new TypeNode($1, DTYPE_BOOL); }
+    ;
+
+value:              INTEGER         { $$ = new ValueNode($1.loc, DTYPE_INT, $1.value); delete $1.value; }
+    |               FLOAT           { $$ = new ValueNode($1.loc, DTYPE_FLOAT, $1.value); delete $1.value; }
+    |               CHAR            { $$ = new ValueNode($1.loc, DTYPE_CHAR, $1.value); delete $1.value; }
+    |               BOOL            { $$ = new ValueNode($1.loc, DTYPE_BOOL, $1.value); delete $1.value; }
+    ;
+
+ident:              IDENTIFIER      { $$ = new IdentifierNode($1.loc, $1.value); delete $1.value; }
+    ;
 
 %%
 
-program:            		%empty
-    |               		stmt_list           { exit(0);  }
-    ;
-
-stmt_list: 					stmt                                { $$ = new StatementListNode($1, nullptr, false); }
-	|						stmt_list stmt                      { $$ = new StatementListNode($2, $1, true); }
-	;
-
-stmt:						';'                                 { $$ = new StatementNode(nullptr, nullptr, nullptr, "", STMT_NOP); }
-	|						expression ';'                      { $$ = new StatementNode($1, nullptr, nullptr, "", STMT_EXPRESSION_STMT); }
-	|						variable_decl ';'                   { $$ = new StatementNode(nullptr, $1, nullptr, "", STMT_VAR_DEC); }
-	|               		multi_variable_decl ';'             { $$ = new StatementNode(nullptr, nullptr, $1, "", STMT_MULTI_VAR_DEC); }
-    |                       IDENTIFIER '=' expression           { $$ = new StatementNode($3, nullptr, nullptr, $1, STMT_IDENTIFIER_EXPRESSION); }
-	;
-
-
-variable_decl:           	type IDENTIFIER                                         { $$ = new VarDecNode($1, $2, false, nullptr, TYPE_ID); }
-    |               		CONST type IDENTIFIER                                   { $$ = new VarDecNode($2, $3, true, nullptr, CONST_TYPE_ID); }
-    |               		type IDENTIFIER '=' expression                          { $$ = new VarDecNode($1, $2, false, $4, TYPE_EXPRESSION); }
-    |               		CONST type IDENTIFIER '=' expression                    { $$ = new VarDecNode($2, $3, true, $5, CONST_TYPE_EXPRESSION); }
-    ;
-
-
-multi_variable_decl:     	variable_decl ',' IDENTIFIER                            { $$ = new MultiVarNode($1, nullptr, nullptr, $3, VAR_DEC ); }
-    |               		variable_decl ',' IDENTIFIER '=' expression             { $$ = new MultiVarNode($1, $5, nullptr, $3, VAR_DEC_INIT ); }
-    |               		multi_variable_decl ',' IDENTIFIER                      { $$ = new MultiVarNode(nullptr, nullptr, $1, $3, MULTI_DEC ); }
-    |               		multi_variable_decl ',' IDENTIFIER '=' expression       { $$ = new MultiVarNode(nullptr, $5, $1, $3, MULTI_DEC_INIT ); }
-    ;
-
-
-
-expression:                 expression '+' expression       { $$ = new BinaryOperationNode(PLUS, $1, $3); }
-    |                       expression '-' expression       { $$ = new BinaryOperationNode(MINUS, $1, $3); }
-    |                       expression '*' expression       { $$ = new BinaryOperationNode(MULTIPLICATION, $1, $3); }
-    |                       expression '/' expression       { $$ = new BinaryOperationNode(DIVISION, $1, $3); }
-    |                       expression '%' expression       { $$ = new BinaryOperationNode(MODOLUS, $1, $3); }
-    |                       expression '&' expression       { $$ = new BinaryOperationNode(BITWISE_AND, $1, $3); }
-    |                       expression '|' expression       { $$ = new BinaryOperationNode(BITWISE_OR, $1, $3); }
-    |                       expression '^' expression       { $$ = new BinaryOperationNode(BITWISE_XOR, $1, $3); }
-    |                       expression AND expression       { $$ = new BinaryOperationNode(AND, $1, $3); }
-    |                       expression OR expression        { $$ = new BinaryOperationNode(OR, $1, $3); }
-    |                       expression '>' expression       { $$ = new BinaryOperationNode(G, $1, $3); }
-    |                       expression GE expression        { $$ = new BinaryOperationNode(GE, $1, $3); }
-    |                       expression '<' expression       { $$ = new BinaryOperationNode(L, $1, $3); }
-    |                       expression LE expression        { $$ = new BinaryOperationNode(LE, $1, $3); }
-    |                       expression EQUAL expression     { $$ = new BinaryOperationNode(EQUAL, $1, $3); }
-    |                       expression NOT_EQUAL expression { $$ = new BinaryOperationNode(NOT_EQUAL, $1, $3); }
-    |                       '+' expression %prec U_PLUS     { $$ = new UnaryOperationNode(PLUS, $2); }
-    |                       '-' expression %prec U_MINUM    { $$ = new UnaryOperationNode(MINUS, $2); }
-    |                       '~' expression                  { $$ = new UnaryOperationNode(BITWISE_NOT, $2); }
-    |                       '!' expression                  { $$ = new UnaryOperationNode(NOT, $2); }
-    |                       '(' expression ')'              { Value val;  $$ = new ExpressionNode($2, RECURSIVE_EXPRESSION, val); }
-    |                       INTEGER_NUMBER                  { Value val; val.intVal = $1; $$ = new ExpressionNode(nullptr, EXPRESSION_VALUE, val); }
-    |                       FLOAT_NUMBER                    { Value val; val.floatVal = $1; $$ = new ExpressionNode(nullptr, EXPRESSION_VALUE, val); }
-    |                       BOOL_VALUE                      { Value val; val.boolVal = $1; $$ = new ExpressionNode(nullptr, EXPRESSION_VALUE, val); }
-    |                       STRING_VALUE                    { Value val; val.stringVal = $1; $$ = new ExpressionNode(nullptr, EXPRESSION_VALUE, val); }
-    |                       IDENTIFIER                      { $$ = new IdentifierNode($1); }
-    ;
-
-
-
-type:                       INT                             { $$ = INT }
-    |                       FLOAT                           { $$ = FLOAT }
-    |                       BOOL                            { $$ = BOOL }
-    |                       STRING                          { $$ = STRING }
-    ;
-
-%%
+void yyerror (char const *s)
+{
+   fprintf (stderr, "%s\n", s);
+}
