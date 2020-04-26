@@ -12,3 +12,4 @@
 
 # output ( linux, windows )
 **/*.o
+**/out/*
