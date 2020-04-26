@@ -25,10 +25,11 @@ void writeToFile(string data, string filename);
 
 int main(int argc, char *argv[])
 {
+    inputFilename = string(argv[1]);
+
     // Construct context objects
     ScopeContext scopeContext(inputFilename, warn);
     GenerationContext genContext;
-    inputFilename = string(argv[1]);
 
     string temp = "";
     if (inputFilename.size() > 5)
@@ -47,6 +48,7 @@ int main(int argc, char *argv[])
         cout << "please enter a valid filename\n";
         exit(0);
     }
+
 
     // Construct the parse tree
     yyparse();
