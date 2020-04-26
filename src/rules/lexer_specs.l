@@ -41,6 +41,8 @@ REAL                ({INTEGER}{EXP}|{FLOAT}{EXP}?)
 LETTER              [a-zA-Z_]
 IDENTIFIER          {LETTER}({LETTER}|{DIGIT})*
 LINE_COMMENT        "//"(.)*
+STRING_VALUE	    (\"(.*)\")
+
 
 %%
 
@@ -83,7 +85,7 @@ LINE_COMMENT        "//"(.)*
 "true"                     saveToken(); return BOOL;
 "false"                    saveToken(); return BOOL;
 {IDENTIFIER}               saveToken(); return IDENTIFIER;
-
+{STRING_VALUE}             saveToken(); return STRING_VALUE;
 %{
 // Others
 %}

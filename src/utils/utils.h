@@ -127,24 +127,6 @@ struct Utils {
         return false;
     }
 
-    /**
-     * Checks whether the given operator requires l-value operand or not.
-     *
-     * @param opr the operator to check.
-     *
-     * @return {@code true} if the given operator requires l-value operand; {@code false} otherwise.
-     */
-    static bool isLvalueOpr(Operator opr) {
-        switch (opr) {
-            case OPR_ASSIGN:
-            case OPR_PRE_INC:
-            case OPR_PRE_DEC:
-            case OPR_SUF_INC:
-            case OPR_SUF_DEC:
-                return true;
-        }
-        return false;
-    }
 
     /**
      * Converts the given operator into its corresponding token string.
@@ -300,8 +282,6 @@ struct Utils {
      */
     static string dtypeToStr(DataType type) {
         switch (type) {
-            case DTYPE_VOID:
-                return "void";
             case DTYPE_BOOL:
                 return "bool";
             case DTYPE_CHAR:
@@ -310,6 +290,8 @@ struct Utils {
                 return "int";
             case DTYPE_FLOAT:
                 return "float";
+            case DTYPE_STRING:
+                return "string";
             case DTYPE_FUNC_PTR:
                 return "pointer to function";
             case DTYPE_ERROR:
@@ -332,6 +314,8 @@ struct Utils {
                 return "VOID";
             case DTYPE_BOOL:
                 return "BOOL";
+            case DTYPE_STRING:
+                return "STRING";
             case DTYPE_CHAR:
                 return "CHR";
             case DTYPE_INT:
@@ -359,5 +343,6 @@ struct Utils {
         return (t1 != t2 ? dtypeToQuad(t1) + "_TO_" + dtypeToQuad(t2) + "\n" : "");
     }
 };
+
 
 #endif

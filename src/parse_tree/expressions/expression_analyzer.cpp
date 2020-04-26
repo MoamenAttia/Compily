@@ -21,10 +21,6 @@ bool AssignOprNode::analyze(ScopeContext* context, bool valueUsed) {
         context->log("assignment of read-only variable '" + lhs->reference->declaredHeader() + "'", lhs->loc, LOG_ERROR);
         return false;
     }
-    if (rhs->type == DTYPE_VOID || rhs->type == DTYPE_FUNC_PTR) {
-        context->log("invalid conversion from '" + rhs->exprTypeStr() + "' to '" + lhs->exprTypeStr() + "'", rhs->loc, LOG_ERROR);
-        return false;
-    }
 
     type = lhs->type;
     reference = lhs->reference;
@@ -42,9 +38,7 @@ bool BinaryOprNode::analyze(ScopeContext* context, bool valueUsed) {
         return false;
     }
 
-    if (lhs->type == DTYPE_VOID || lhs->type == DTYPE_FUNC_PTR ||
-        rhs->type == DTYPE_VOID || rhs->type == DTYPE_FUNC_PTR ||
-        (Utils::isBitwiseOpr(opr) || opr == OPR_MOD) && (lhs->type == DTYPE_FLOAT || rhs->type == DTYPE_FLOAT)) {
+    if (lhs->type != rhs->type) {
         context->log("invalid operands of types '" + lhs->exprTypeStr() + "' and '" + rhs->exprTypeStr() + "' to " +
                      getOpr(), loc, LOG_ERROR);
         return false;
@@ -63,26 +57,13 @@ bool BinaryOprNode::analyze(ScopeContext* context, bool valueUsed) {
 }
 
 bool UnaryOprNode::analyze(ScopeContext* context, bool valueUsed) {
-    if (!expr->analyze(context, valueUsed || Utils::isLvalueOpr(opr))) {
+    if (!expr->analyze(context, valueUsed)) {
         return false;
     }
 
-    if (expr->type == DTYPE_VOID || expr ->type == DTYPE_FUNC_PTR ||
-        expr->type == DTYPE_FLOAT && Utils::isBitwiseOpr(opr)) {
+    if (expr->type == DTYPE_FLOAT && Utils::isBitwiseOpr(opr)) {
         context->log("invalid operand of type '" + expr->exprTypeStr() + "' to " + getOpr(), loc, LOG_ERROR);
         return false;
-    }
-
-    if (Utils::isLvalueOpr(opr)) {
-        if (expr->reference == NULL) {
-            context->log("lvalue required as an operand of increment/decrement operator", expr->loc, LOG_ERROR);
-            return false;
-        }
-        if (expr->reference && expr->constant) {
-            context->log("increment/decrement of read-only variable '" + expr->reference->declaredHeader() + "'",
-                         expr->loc, LOG_ERROR);
-            return false;
-        }
     }
 
     type = (Utils::isLogicalOpr(opr) ? DTYPE_BOOL : expr->type);

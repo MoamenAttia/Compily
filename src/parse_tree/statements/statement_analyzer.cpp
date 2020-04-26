@@ -19,31 +19,16 @@ bool BlockNode::analyze(ScopeContext* context) {
 
 bool VarDeclarationNode::analyze(ScopeContext* context) {
     bool ret = true;
-    if (type->type == DTYPE_VOID) {
-        context->log("variable or field '" + ident->name + "' declared void", ident->loc, LOG_ERROR);
-        ret = false;
-    }
-    else if (!context->declareSymbol(this)) {
+    if (!context->declareSymbol(this)) {
         context->log("'" + declaredHeader() + "' redeclared", ident->loc, LOG_ERROR);
         ret = false;
-    }
-    if (context->declareFuncParams) {
-        initialized = true;
     }
     if (value) {
         context->initializeVar = true;
         ret &= value->analyze(context, true);
         context->initializeVar = false;
     }
-    if (ret && value != NULL && (value->type == DTYPE_VOID || value->type == DTYPE_FUNC_PTR)) {
-        context->log("invalid conversion from '" + value->exprTypeStr() + "' to '" + type->toString() + "'", value->loc, LOG_ERROR);
-        ret = false;
-    }
-    else if (context->declareFuncParams && value != NULL) {
-        context->log("default function parameters are not allowed", value->loc, LOG_ERROR);
-        ret = false;
-    }
-    else if (constant && value == NULL && !context->declareFuncParams) {
+    if (constant && value == NULL) {
         context->log("uninitialized const '" + ident->name + "'", ident->loc, LOG_ERROR);
         ret = false;
     }

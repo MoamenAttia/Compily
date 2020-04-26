@@ -58,7 +58,6 @@ public:
     //
     // Public member variables
     //
-    bool declareFuncParams = false;
     bool initializeVar = false;
 
 public:

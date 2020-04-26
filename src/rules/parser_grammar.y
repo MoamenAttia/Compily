@@ -60,6 +60,7 @@ StatementNode* programRoot = NULL;
 %token <token> CHAR
 %token <token> BOOL
 %token <token> IDENTIFIER
+%token <token> STRING_VALUE
 
 // =====================================================================================================
 // Non-terminal Symbols Types
@@ -153,12 +154,14 @@ expression:         expression '=' expression               { $$ = new AssignOpr
 type:               TYPE_INT        { $$ = new TypeNode($1, DTYPE_INT); }
     |               TYPE_FLOAT      { $$ = new TypeNode($1, DTYPE_FLOAT); }
     |               TYPE_BOOL       { $$ = new TypeNode($1, DTYPE_BOOL); }
+    |               TYPE_STRING     { $$ = new TypeNode($1, DTYPE_STRING); }
     ;
 
 value:              INTEGER         { $$ = new ValueNode($1.loc, DTYPE_INT, $1.value);  }
     |               FLOAT           { $$ = new ValueNode($1.loc, DTYPE_FLOAT, $1.value);  }
     |               CHAR            { $$ = new ValueNode($1.loc, DTYPE_CHAR, $1.value);  }
     |               BOOL            { $$ = new ValueNode($1.loc, DTYPE_BOOL, $1.value);  }
+    |               STRING_VALUE    { $$ = new ValueNode($1.loc, DTYPE_STRING, $1.value); }
     ;
 
 ident:              IDENTIFIER      { $$ = new IdentifierNode($1.loc, $1.value);  }
