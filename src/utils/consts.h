@@ -1,79 +1,84 @@
-#pragma once
+#ifndef __CONSTS_H_
+#define __CONSTS_H_
 
-// Enum for DataType in the language.
-enum DataType {
-    INT = 0,
-    FLOAT,
-    BOOL,
-    STRING,
-};
-
+/**
+ * Enum holding all the possible operators in our language.
+ */
 enum Operator {
-    PLUS = 30,              // +
-    MINUS,                  // -
-    ASSIGN,                 // =
-    MULTIPLICATION,         // *
-    DIVISION,               // /
-    MODOLUS,                // %
-    BITWISE_AND,            // &
-    BITWISE_OR,             // |
-    BITWISE_XOR,            // ^
-    BITWISE_NOT,            // ~
-    AND,                    // &&
-    OR,                     // ||
-    NOT,                    // !
-    G,           // >
-    GE,  // >=
-    L,              // <
-    LE,     // <=
-    EQUAL,                  // ==
-    NOT_EQUAL,              // !=
+    OPR_ASSIGN = 100,       // a = b
+    OPR_ADD,                // a + b
+    OPR_U_PLUS,             // +54
+    OPR_SUB,                // a - b
+    OPR_U_MINUS,            // -54
+    OPR_MUL,                // a * b
+    OPR_DIV,                // a / b
+    OPR_MOD,                // a % b
+    OPR_PRE_INC,            // ++a
+    OPR_SUF_INC,            // a++
+    OPR_PRE_DEC,            // --a
+    OPR_SUF_DEC,            // a--
+    OPR_AND,                // a & b
+    OPR_OR,                 // a | b
+    OPR_XOR,                // a ^ b
+    OPR_NOT,                // ~a
+    OPR_SHL,                // a << 1
+    OPR_SHR,                // a >> 1
+    OPR_LOGICAL_AND,        // a && b
+    OPR_LOGICAL_OR,         // a || b
+    OPR_LOGICAL_NOT,        // !a
+    OPR_GREATER,            // a > b
+    OPR_GREATER_EQUAL,      // a >= b
+    OPR_LESS,               // a < b
+    OPR_LESS_EQUAL,         // a <= b
+    OPR_EQUAL,              // a == b
+    OPR_NOT_EQUAL,          // a != b
+
+    //
+    // Quadruples instructions
+    //
+	OPR_PUSH,				// PUSH X, push to the stack
+	OPR_POP, 				// POP A, pop last element from the stack
+	OPR_JMP,				// JMP L1, unconditional jump
+    OPR_JNZ,                // JNZ L1, jmp if the top of the stack is not zero and pops it.
+	OPR_JZ, 				// JZ L1, jmp if the top of the stack is zero and pops it.
 };
 
-
-// Enum for some reserved words https://www.tutorialspoint.com/Reserved-keywords-in-Cplusplus
-enum ReservedWords {
-    TRY = 80,
-    CATCH,
-    CONST,
-    PUBLIC,
-    PRIVATE,
-    FALSE,
-    TRUE,
-    NEW,
-    GOTO,
-    THROW,
+/**
+ * Enum holding all the possible data types in our language.
+ * 
+ * Note that order does matter.
+ * DON'T CHANGE ENUM ORDER.
+ */
+enum DataType {
+    DTYPE_VOID = 300,
+    DTYPE_BOOL,
+    DTYPE_CHAR,
+    DTYPE_INT,
+    DTYPE_STRING,
+    DTYPE_FLOAT,
+    DTYPE_FUNC_PTR,
+    DTYPE_ERROR,
+    DTYPE_UNKNOWN,
 };
 
-
-
-// Enum for Expression Node
-enum ExpressionNodeEnum {
-    BINARY_OPERATION = 100,
-    UNARY_OPERATION,
-    RECURSIVE_EXPRESSION,
-    EXPRESSION_VALUE,
+/**
+ * Enum holding different scope types.
+ */
+enum ScopeType {
+    SCOPE_BLOCK = 500,
+    SCOPE_FUNCTION,
+    SCOPE_LOOP,
+    SCOPE_IF,
+    SCOPE_SWITCH,
 };
 
-enum MultiVarNodeEnum {
-    VAR_DEC = 110,
-    VAR_DEC_INIT,
-    MULTI_DEC,
-    MULTI_DEC_INIT
+/**
+ * Enum holding different logging levels.
+ */
+enum LogLevel {
+    LOG_ERROR,
+    LOG_WARNING,
+    LOG_NOTE
 };
 
-enum VarDecNodeEnum {
-    TYPE_ID = 120,
-    CONST_TYPE_ID,
-    TYPE_EXPRESSION,
-    CONST_TYPE_EXPRESSION
-};
-
-
-enum StatementNodeEnum {
-    STMT_NOP = 130,
-    STMT_EXPRESSION_STMT,
-    STMT_VAR_DEC,
-    STMT_MULTI_VAR_DEC,
-    STMT_IDENTIFIER_EXPRESSION
-};
+#endif
