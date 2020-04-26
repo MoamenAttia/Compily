@@ -19,6 +19,12 @@ bool BlockNode::analyze(ScopeContext* context) {
 
 bool VarDeclarationNode::analyze(ScopeContext* context) {
     bool ret = true;
+    if(value){
+        if(value->type != ident->type){
+            context->log("type missmatch: cannot cast " + value->exprTypeStr() + " to " + Utils::dtypeToStr(type->type), ident->loc, LOG_ERROR);
+            return false;
+        }
+    }
     if (!context->declareSymbol(this)) {
         context->log("'" + declaredHeader() + "' redeclared", ident->loc, LOG_ERROR);
         ret = false;
@@ -28,6 +34,7 @@ bool VarDeclarationNode::analyze(ScopeContext* context) {
         ret &= value->analyze(context, true);
         context->initializeVar = false;
     }
+
     if (constant && value == NULL) {
         context->log("uninitialized const '" + ident->name + "'", ident->loc, LOG_ERROR);
         ret = false;

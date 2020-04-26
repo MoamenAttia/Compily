@@ -84,28 +84,6 @@ struct Utils {
         return false;
     }
 
-    /**
-     * Checks whether the given operator is a logical operator or not.
-     *
-     * @param opr the operator to check.
-     *
-     * @return {@code true} if the given operator is logical; {@code false} otherwise.
-     */
-    static bool isLogicalOpr(Operator opr) {
-        switch (opr) {
-            case OPR_LOGICAL_AND:
-            case OPR_LOGICAL_OR:
-            case OPR_LOGICAL_NOT:
-            case OPR_GREATER:
-            case OPR_GREATER_EQUAL:
-            case OPR_LESS:
-            case OPR_LESS_EQUAL:
-            case OPR_EQUAL:
-            case OPR_NOT_EQUAL:
-                return true;
-        }
-        return false;
-    }
 
     /**
      * Checks whether the given operator is a bitwise operator or not.
@@ -251,12 +229,6 @@ struct Utils {
 				return "PUSH_" + dtypeToQuad(type);
 			case OPR_POP:
 				return "POP_" + dtypeToQuad(type);
-			case OPR_JMP:
-				return "JMP";
-            case OPR_JNZ:
-				return "JNZ_" + dtypeToQuad(type);
-			case OPR_JZ:
-				return "JZ_" + dtypeToQuad(type);
         }
 
         return "#";
@@ -270,7 +242,7 @@ struct Utils {
      * @return {@code true} if the given type is integer type; {@code false} otherwise.
      */
     static bool isIntegerType(DataType type) {
-        return (type == DTYPE_BOOL || type == DTYPE_CHAR || type == DTYPE_INT);
+        return (type == DTYPE_INT);
     }
 
     /**
@@ -292,8 +264,6 @@ struct Utils {
                 return "float";
             case DTYPE_STRING:
                 return "string";
-            case DTYPE_FUNC_PTR:
-                return "pointer to function";
             case DTYPE_ERROR:
                 return "type error";
         }
@@ -310,8 +280,6 @@ struct Utils {
      */
     static string dtypeToQuad(DataType type) {
         switch (type) {
-            case DTYPE_VOID:
-                return "VOID";
             case DTYPE_BOOL:
                 return "BOOL";
             case DTYPE_STRING:
@@ -322,26 +290,11 @@ struct Utils {
                 return "INT";
             case DTYPE_FLOAT:
                 return "FLOAT";
-            case DTYPE_FUNC_PTR:
-                return "FNCPTR";
-            case DTYPE_ERROR:
-                return "TYPERR";
         }
 
         return "unknown";
     }
 
-    /**
-     * Convert data type from t1 into t2.
-     *
-     * @param t1 the type to convert from.
-     * @param t2 the type to convert to.
-     *
-     * @return the corresponding quadruple string.
-     */
-    static string dtypeConvQuad(DataType t1, DataType t2) {
-        return (t1 != t2 ? dtypeToQuad(t1) + "_TO_" + dtypeToQuad(t2) + "\n" : "");
-    }
 };
 
 

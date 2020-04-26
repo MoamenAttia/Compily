@@ -38,9 +38,6 @@ enum Operator {
     //
 	OPR_PUSH,				// PUSH X, push to the stack
 	OPR_POP, 				// POP A, pop last element from the stack
-	OPR_JMP,				// JMP L1, unconditional jump
-    OPR_JNZ,                // JNZ L1, jmp if the top of the stack is not zero and pops it.
-	OPR_JZ, 				// JZ L1, jmp if the top of the stack is zero and pops it.
 };
 
 /**
@@ -50,13 +47,11 @@ enum Operator {
  * DON'T CHANGE ENUM ORDER.
  */
 enum DataType {
-    DTYPE_VOID = 300,
-    DTYPE_BOOL,
+    DTYPE_BOOL  = 300,
     DTYPE_CHAR,
     DTYPE_INT,
     DTYPE_STRING,
     DTYPE_FLOAT,
-    DTYPE_FUNC_PTR,
     DTYPE_ERROR,
     DTYPE_UNKNOWN,
 };

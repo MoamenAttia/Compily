@@ -9,7 +9,6 @@ string AssignOprNode::generateQuad(GenerationContext* context) {
 
     ret += lhs->generateQuad(context);
     ret += rhs->generateQuad(context);
-    ret += Utils::dtypeConvQuad(rhs->type, type);
     ret += Utils::oprToQuad(OPR_POP, type) + " " + lhs->reference->alias + "\n";
 
     if (used) {
@@ -26,10 +25,8 @@ string BinaryOprNode::generateQuad(GenerationContext* context) {
 
     if (used) {
         ret += lhs->generateQuad(context);
-        ret += Utils::dtypeConvQuad(lhs->type, t);
 
         ret += rhs->generateQuad(context);
-        ret += Utils::dtypeConvQuad(rhs->type, t);
 
         ret += Utils::oprToQuad(opr, t) + "\n";
     }
@@ -46,9 +43,6 @@ string UnaryOprNode::generateQuad(GenerationContext* context) {
     
     ret += expr->generateQuad(context);
 
-    if (used) {
-        ret += Utils::dtypeConvQuad(expr->type, type);
-    }
 
     switch (opr) {
         case OPR_PRE_INC:

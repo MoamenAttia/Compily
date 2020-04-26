@@ -9,16 +9,18 @@ bool AssignOprNode::analyze(ScopeContext* context, bool valueUsed) {
         return false;
     }
 
-    if (lhs->type == DTYPE_FUNC_PTR) {
-        context->log("assignment of function '" + lhs->reference->declaredHeader() + "'", lhs->loc, LOG_ERROR);
-        return false;
-    }
+
     if (lhs->reference == NULL) {
         context->log("lvalue required as left operand of assignment", lhs->loc, LOG_ERROR);
         return false;
     }
     if (lhs->reference && lhs->constant) {
         context->log("assignment of read-only variable '" + lhs->reference->declaredHeader() + "'", lhs->loc, LOG_ERROR);
+        return false;
+    }
+
+    if(lhs->type != rhs->type) {
+        context->log("type missmatch: cannot cast " + rhs->exprTypeStr() + " to " + lhs->exprTypeStr(), lhs->loc, LOG_ERROR);
         return false;
     }
 
@@ -44,11 +46,7 @@ bool BinaryOprNode::analyze(ScopeContext* context, bool valueUsed) {
         return false;
     }
 
-    if (Utils::isLogicalOpr(opr)) {
-        type = DTYPE_BOOL;
-    } else {
-        type = max(lhs->type, rhs->type);
-    }
+    type = max(lhs->type, rhs->type);
 
     constant = (lhs->constant && rhs->constant);
     used = valueUsed;
@@ -66,8 +64,8 @@ bool UnaryOprNode::analyze(ScopeContext* context, bool valueUsed) {
         return false;
     }
 
-    type = (Utils::isLogicalOpr(opr) ? DTYPE_BOOL : expr->type);
-    reference = (opr == OPR_PRE_INC || opr == OPR_PRE_DEC ? expr->reference : NULL);
+    type = expr->type;
+    reference = NULL;
     constant = expr->constant;
     used = valueUsed;
 
