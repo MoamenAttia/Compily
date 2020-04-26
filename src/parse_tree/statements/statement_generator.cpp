@@ -19,7 +19,7 @@ string VarDeclarationNode::generateQuad(GenerationContext* context) {
         ret += value->generateQuad(context);
         ret += Utils::dtypeConvQuad(value->type, type->type);
     }
-    if (value || context->declareFuncParams) {
+    if (value) {
         ret += Utils::oprToQuad(OPR_POP, type->type) + " " + alias + "\n";
     }
 
