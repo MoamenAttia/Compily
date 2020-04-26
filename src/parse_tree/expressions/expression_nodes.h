@@ -4,32 +4,6 @@
 #include "../basic_nodes.h"
 
 
-/**
- * An expression container class.
- */
-struct ExprContainerNode : public ExpressionNode {
-    ExpressionNode* expr;
-
-    ExprContainerNode(const Location& loc, ExpressionNode* expr) : ExpressionNode(loc) {
-        this->expr = expr;
-    }
-
-    virtual ~ExprContainerNode() {
-        if (expr) delete expr;
-    }
-
-    virtual int getConstIntValue() {
-        return expr->getConstIntValue();
-    }
-
-    virtual bool analyze(ScopeContext* context, bool valueUsed);
-
-    virtual string generateQuad(GenerationContext* context);
-
-    virtual string toString(int ind = 0) {
-        return expr->toString(ind);
-    }
-};
 
 /**
  * The node class holding an assignment operator in the parse tree.

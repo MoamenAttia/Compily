@@ -8,27 +8,17 @@ bool ErrorNode::analyze(ScopeContext* context) {
 }
 
 bool BlockNode::analyze(ScopeContext* context) {
-    if (context->isGlobalScope()) {
-        context->log("block is not allowed in global scope", loc, LOG_ERROR);
-        return false;
-    }
-
     bool ret = true;
-
     context->addScope(SCOPE_BLOCK, this);
-
     for (int i = 0; i < statements.size(); ++i) {
         ret &= statements[i]->analyze(context);
     }
-
     context->popScope();
-
     return ret;
 }
 
 bool VarDeclarationNode::analyze(ScopeContext* context) {
     bool ret = true;
-
     if (type->type == DTYPE_VOID) {
         context->log("variable or field '" + ident->name + "' declared void", ident->loc, LOG_ERROR);
         ret = false;
@@ -37,17 +27,14 @@ bool VarDeclarationNode::analyze(ScopeContext* context) {
         context->log("'" + declaredHeader() + "' redeclared", ident->loc, LOG_ERROR);
         ret = false;
     }
-
     if (context->declareFuncParams) {
         initialized = true;
     }
-
     if (value) {
         context->initializeVar = true;
         ret &= value->analyze(context, true);
         context->initializeVar = false;
     }
-
     if (ret && value != NULL && (value->type == DTYPE_VOID || value->type == DTYPE_FUNC_PTR)) {
         context->log("invalid conversion from '" + value->exprTypeStr() + "' to '" + type->toString() + "'", value->loc, LOG_ERROR);
         ret = false;
@@ -60,8 +47,6 @@ bool VarDeclarationNode::analyze(ScopeContext* context) {
         context->log("uninitialized const '" + ident->name + "'", ident->loc, LOG_ERROR);
         ret = false;
     }
-
-
     return ret;
 }
 

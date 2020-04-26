@@ -2,21 +2,6 @@
 #include "../../context/scope_context.h"
 
 
-bool ExprContainerNode::analyze(ScopeContext* context, bool valueUsed) {
-    if (!context->initializeVar && context->isGlobalScope()) {
-        context->log("expression is not allowed in global scope", loc, LOG_ERROR);
-        return false;
-    }
-
-    bool ret = expr->analyze(context, valueUsed);
-
-    type = expr->type;
-    reference = expr->reference;
-    constant = expr->constant;
-    used = valueUsed;
-
-    return ret;
-}
 
 bool AssignOprNode::analyze(ScopeContext* context, bool valueUsed) {
     if (!(rhs->analyze(context, true) & lhs->analyze(context, false))) {

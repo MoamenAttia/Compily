@@ -2,9 +2,7 @@
 #include "../../context/generation_context.h"
 
 
-string ExprContainerNode::generateQuad(GenerationContext* context) {
-    return expr->generateQuad(context);
-}
+
 
 string AssignOprNode::generateQuad(GenerationContext* context) {
     string ret;

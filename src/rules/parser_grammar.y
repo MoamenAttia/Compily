@@ -96,7 +96,7 @@ StatementNode* programRoot = NULL;
 // =============
 
 program:            %empty                      { $$ = NULL; programRoot = new BlockNode(); }
-    |               stmt_list                   { $$ = NULL; programRoot = new BlockNode((*$1)[0]->loc, *$1); delete $1; }
+    |               stmt_list                   { $$ = NULL; programRoot = new BlockNode((*$1)[0]->loc, *$1); }
     ;
 
 stmt_list:          stmt                        { $$ = new StmtList(); $$->push_back($1); }
@@ -104,7 +104,7 @@ stmt_list:          stmt                        { $$ = new StmtList(); $$->push_
     ;
 
 stmt:               ';'                         { $$ = new StatementNode($<location>1); }
-    |               expression ';'              { $$ = new ExprContainerNode($1->loc, $1); }
+    |               expression ';'              { $$ = $1; }
     |               var_decl ';'                { $$ = $1; }
     |               multi_var_decl ';'          { $$ = $1; }
     ;
@@ -155,13 +155,13 @@ type:               TYPE_INT        { $$ = new TypeNode($1, DTYPE_INT); }
     |               TYPE_BOOL       { $$ = new TypeNode($1, DTYPE_BOOL); }
     ;
 
-value:              INTEGER         { $$ = new ValueNode($1.loc, DTYPE_INT, $1.value); delete $1.value; }
-    |               FLOAT           { $$ = new ValueNode($1.loc, DTYPE_FLOAT, $1.value); delete $1.value; }
-    |               CHAR            { $$ = new ValueNode($1.loc, DTYPE_CHAR, $1.value); delete $1.value; }
-    |               BOOL            { $$ = new ValueNode($1.loc, DTYPE_BOOL, $1.value); delete $1.value; }
+value:              INTEGER         { $$ = new ValueNode($1.loc, DTYPE_INT, $1.value);  }
+    |               FLOAT           { $$ = new ValueNode($1.loc, DTYPE_FLOAT, $1.value);  }
+    |               CHAR            { $$ = new ValueNode($1.loc, DTYPE_CHAR, $1.value);  }
+    |               BOOL            { $$ = new ValueNode($1.loc, DTYPE_BOOL, $1.value);  }
     ;
 
-ident:              IDENTIFIER      { $$ = new IdentifierNode($1.loc, $1.value); delete $1.value; }
+ident:              IDENTIFIER      { $$ = new IdentifierNode($1.loc, $1.value);  }
     ;
 
 %%
