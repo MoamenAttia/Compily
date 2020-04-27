@@ -86,7 +86,7 @@ bool IdentifierNode::analyze(ScopeContext *context, bool valueUsed)
 
     if (ptr == NULL)
     {
-        context->log("'" + name + "' was not declared in this scope", loc, LOG_ERROR);
+        context->log("'" + name + "' was not declared in the program", loc, LOG_ERROR);
         return false;
     }
 
