@@ -1,5 +1,0 @@
-PUSH_INT 1
-POP_INT a
-PUSH_INT 2
-POP_INT b
-

@@ -1,8 +1,8 @@
-#ifndef __STATEMENT_NODES_H_
-#define __STATEMENT_NODES_H_
+#pragma once
+
 
 #include "../basic_nodes.h"
-#include "../expressions/expression_nodes.h"
+#include "../ExpressionNodes/ExpressionNodes.h"
 
 
 /**
@@ -120,4 +120,3 @@ struct MultiVarDeclarationNode : public StatementNode {
     }
 };
 
-#endif

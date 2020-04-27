@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "../parse_tree/parse_tree.h"
+#include "../SyntaxTree/includes.h"
 
 using namespace std;
 

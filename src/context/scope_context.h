@@ -10,7 +10,7 @@
 #include <stack>
 #include <unordered_map>
 
-#include "../parse_tree/parse_tree.h"
+#include "../SyntaxTree/includes.h"
 
 #include "../utils/utils.h"
 #include "../utils/consts.h"

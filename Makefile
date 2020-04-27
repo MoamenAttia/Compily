@@ -1,32 +1,26 @@
 clear:
 	clear
 
-copy:
-	cp -r  src/* out/
-
 gen:
-	flex -o out/rules/lexer.cpp out/rules/lexer_specs.l
-	bison -d -o out/rules/parser.cpp out/rules/parser_grammar.y
+	flex -o src/rules/lexer.cpp src/rules/lexer.l
+	bison -d -o src/rules/parser.cpp src/rules/parser.y
 
-comp:
-	g++ -g -o out/compily.out \
-		out/main.cpp \
-		out/parse_tree/statements/statement_analyzer.cpp \
-		out/parse_tree/statements/statement_generator.cpp \
-		out/parse_tree/expressions/expression_analyzer.cpp \
-		out/parse_tree/expressions/expression_generator.cpp \
-		out/parse_tree/expressions/expression_evaluator.cpp \
-		out/rules/lexer.cpp \
-		out/rules/parser.cpp
-build:
-	@make -s clear
-	@make -s copy
-	@make -s gen
-	@make -s comp
+compile:
+	g++ -g -o compily.out \
+		src/main.cpp \
+		src/SyntaxTree/StatementNodes/StatementAnalyzer.cpp \
+		src/SyntaxTree/StatementNodes/StatementGenerator.cpp \
+		src/SyntaxTree/ExpressionNodes/ExpAnalyzer.cpp \
+		src/SyntaxTree/ExpressionNodes/ExpEval.cpp \
+		src/SyntaxTree/ExpressionNodes/ExpGen.cpp \
+		src/rules/lexer.cpp \
+		src/rules/parser.cpp
 run:
 	@make -s clear
-	./out/compily.out tests/test_case0.cpp
+	./compily.out tests/test_case0.cpp
 
 all:
-	@make -s build
+	@make -s clear
+	@make -s gen
+	@make -s compile
 	@make -s run

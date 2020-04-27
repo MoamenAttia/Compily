@@ -4,7 +4,7 @@
 
 #include "context/scope_context.h"
 #include "context/generation_context.h"
-#include "parse_tree/parse_tree.h"
+#include "SyntaxTree/includes.h"
 #include "utils/utils.h"
 #include "utils/consts.h"
 
