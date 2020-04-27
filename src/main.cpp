@@ -21,7 +21,7 @@ string outputFilename = "out.o";
 string symbolTableFilename;
 bool warn = false;
 
-void writeToFile(string data, string filename);
+void writeToFile(string data, string filename, bool is_quadruple);
 
 int main(int argc, char *argv[])
 {
@@ -58,12 +58,12 @@ int main(int argc, char *argv[])
     // Apply semantic check and quadruple generation
     if (programRoot != NULL && programRoot->analyze(&scopeContext))
     {
-        writeToFile(programRoot->generateQuad(&genContext), outputFilename);
-        writeToFile(scopeContext.getSymbolTableStr(), symbolTableFilename);
+        writeToFile(programRoot->generateQuad(&genContext), outputFilename, true);
+        writeToFile(scopeContext.getSymbolTableStr(), symbolTableFilename, false);
     }
     else
     {
-        writeToFile("", outputFilename);
+        writeToFile("", outputFilename, false);
     }
     // Finalize and release allocated memory
     fclose(yyin);
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void writeToFile(string data, string filename)
+void writeToFile(string data, string filename, bool is_quadruple)
 {
     if (filename.empty()) {
         return;
@@ -84,6 +84,15 @@ void writeToFile(string data, string filename)
         cout << "Error in write\n";
         return;
     }
-    fout << data << endl;
+    string output;
+    if(is_quadruple){
+        for(int i = 0 ; i < data.size(); ++i){
+            if(data[i] == ' ') output += "\t";
+            else output += data[i];
+        }
+        fout << output << endl;
+    } else {
+        fout << data << endl;
+    }
     fout.close();
 }

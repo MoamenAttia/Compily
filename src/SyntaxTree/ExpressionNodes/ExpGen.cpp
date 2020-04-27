@@ -1,92 +1,65 @@
 #include "../includes.h"
 #include "../../context/generation_context.h"
 
-
-
-
-string AssignOprNode::generateQuad(GenerationContext* context) {
-    string ret;
-
-    ret += lhs->generateQuad(context);
-    ret += rhs->generateQuad(context);
-    ret += Utils::oprToQuad(OPR_POP, type) + " " + lhs->reference->alias + "\n";
-
-    if (used) {
-        ret += Utils::oprToQuad(OPR_PUSH, type) + " " + lhs->reference->alias + "\n";
-    }
-
-    return ret;
+string AssignOprNode::generateQuad(GenerationContext *context)
+{
+    string lhs_string = lhs->generateQuad(context);
+    string rhs_string = rhs->generateQuad(context);
+    string opr_string = "=";
+    return opr_string + ' ' + rhs_string + ' ' + lhs_string + '\n';
 }
 
-string BinaryOprNode::generateQuad(GenerationContext* context) {
+string BinaryOprNode::generateQuad(GenerationContext *context)
+{
     string ret;
-    
     DataType t = max(lhs->type, rhs->type);
-
-    if (used) {
-        ret += lhs->generateQuad(context);
-
-        ret += rhs->generateQuad(context);
-
-        ret += Utils::oprToQuad(opr, t) + "\n";
+    string opr_string = Utils::oprToStr(opr);
+    string left_operand = lhs->generateQuad(context);
+    string left_temp_reg = "";
+    bool done = false;
+    for (int i = 0; i < left_operand.size(); ++i) {
+        if(done) {
+            ret += left_operand[i];
+            continue;
+        }
+        if (left_operand[i] == ' ') {
+            done = true;
+            continue;
+        }
+        left_temp_reg += left_operand[i];
     }
-    else {
-        ret += lhs->generateQuad(context);
-        ret += rhs->generateQuad(context);
+    done = false;
+    string right_operand = rhs->generateQuad(context);
+    string right_temp_reg = "";
+    for (int i = 0; i < right_operand.size(); ++i) {
+        if(done) {
+            ret += right_operand[i];
+            continue;
+        }
+        if (right_operand[i] == ' ') {
+            done = true;
+            continue;
+        }
+        right_temp_reg += right_operand[i];
     }
-
-    return ret;
+    string temp_reg = context->getTempReg();
+    return temp_reg + " " + ret + opr_string + ' ' + left_temp_reg + ' ' + right_temp_reg + ' ' + temp_reg + '\n';
 }
 
-string UnaryOprNode::generateQuad(GenerationContext* context) {
-    string ret;
-    
-    ret += expr->generateQuad(context);
-
-
-    switch (opr) {
-        case OPR_PRE_INC:
-        case OPR_PRE_DEC:
-            ret += Utils::oprToQuad(opr, type) + "\n";
-            ret += Utils::oprToQuad(OPR_POP, type) + " " + expr->reference->alias + "\n";
-
-            if (used) {
-                ret += Utils::oprToQuad(OPR_PUSH, type) + " " + expr->reference->alias + "\n";
-            }
-            break;
-        case OPR_SUF_INC:
-        case OPR_SUF_DEC:
-            if (used) {
-                ret += Utils::oprToQuad(OPR_PUSH, type) + " " + expr->reference->alias + "\n";
-            }
-            
-            ret += Utils::oprToQuad(opr, type) + "\n";
-            ret += Utils::oprToQuad(OPR_POP, type) + " " + expr->reference->alias + "\n";
-            break;
-        case OPR_U_MINUS:
-        case OPR_NOT:
-        case OPR_LOGICAL_NOT:
-            if (used) {
-                ret += Utils::oprToQuad(opr, type) + "\n";
-            }
-            break;
-    }
-
-    return ret;
+string UnaryOprNode::generateQuad(GenerationContext *context)
+{
+    string opr_string = Utils::oprToStr(opr);
+    string operand = expr->generateQuad(context);
+    string temp_reg = context->getTempReg();
+    return temp_reg + " " + opr_string + ' ' + operand + ' ' + '#' + ' ' + temp_reg + '\n';
 }
 
-string IdentifierNode::generateQuad(GenerationContext* context) {
-    string ret;
-    if (used) {
-        ret += Utils::oprToQuad(OPR_PUSH, type) + " " + reference->alias + "\n";;
-    }
-    return ret;
+string IdentifierNode::generateQuad(GenerationContext *context)
+{
+    return name;
 }
 
-string ValueNode::generateQuad(GenerationContext* context) {
-    string ret;
-    if (used) {
-        ret += Utils::oprToQuad(OPR_PUSH, type) + " " + value + "\n";
-    }
-    return ret;
+string ValueNode::generateQuad(GenerationContext *context)
+{
+    return value;
 }

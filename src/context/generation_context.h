@@ -9,17 +9,21 @@
 
 using namespace std;
 
-
 /**
  * Class holding the current context in the quadruple generation phase.
  */
-class GenerationContext {
+class GenerationContext
+{
 public:
     stack<int> breakLabels, continueLabels;
     int labelCounter;
+    int temp_cnt = 0; // counter of temp registers
 
-    GenerationContext() {
-        labelCounter = 1;
+    
+    GenerationContext() { labelCounter = 1; }
+    string getTempReg()
+    {
+        return "t" + to_string(temp_cnt++);
     }
 };
 

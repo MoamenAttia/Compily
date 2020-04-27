@@ -74,6 +74,8 @@ public:
         this->warn = warn;
     }
 
+  
+
     /**
      * Checks whether the current scope is the global scope within this context or not.
      *
