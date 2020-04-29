@@ -67,14 +67,3 @@ bool VarDeclarationNode::analyze(ScopeContext *context)
     return ret;
 }
 
-bool MultiVarDeclarationNode::analyze(ScopeContext *context)
-{
-    int ret = true;
-
-    for (int i = 0; i < vars.size(); ++i)
-    {
-        ret &= vars[i]->analyze(context);
-    }
-
-    return ret;
-}

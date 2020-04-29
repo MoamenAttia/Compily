@@ -72,7 +72,6 @@ union YYSTYPE
     BlockNode*                  blockNode;
     StatementNode*              stmtNode;
     VarDeclarationNode*         varDeclNode;
-    MultiVarDeclarationNode*    multiVarDeclNode;
     ExpressionNode*             exprNode;
     TypeNode*                   typeNode;
     ValueNode*                  valueNode;
@@ -81,7 +80,7 @@ union YYSTYPE
     Token                       token;
     Location                    location;
 
-#line 85 "src/rules/parser.hpp" /* yacc.c:1909  */
+#line 84 "src/rules/parser.hpp" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

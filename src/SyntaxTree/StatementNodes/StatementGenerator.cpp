@@ -39,5 +39,3 @@ string VarDeclarationNode::generateQuad(GenerationContext *context)
     }
     return ret;
 }
-
-string MultiVarDeclarationNode::generateQuad(GenerationContext *context) { return ""; }

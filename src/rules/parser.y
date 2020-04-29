@@ -31,7 +31,6 @@ StatementNode* programRoot = NULL;
     BlockNode*                  blockNode;
     StatementNode*              stmtNode;
     VarDeclarationNode*         varDeclNode;
-    MultiVarDeclarationNode*    multiVarDeclNode;
     ExpressionNode*             exprNode;
     TypeNode*                   typeNode;
     ValueNode*                  valueNode;
@@ -72,7 +71,6 @@ StatementNode* programRoot = NULL;
 %type <stmtNode>            stmt
 %type <stmtList>            stmt_list
 %type <varDeclNode>         var_decl
-%type <multiVarDeclNode>    multi_var_decl
 %type <exprNode>            expression
 %type <typeNode>            type
 %type <valueNode>           value
@@ -109,7 +107,6 @@ stmt_list:          stmt                        { $$ = new StmtList(); $$->push_
 stmt:               ';'                         { $$ = new StatementNode($<location>1); }
     |               expression ';'              { $$ = $1; }
     |               var_decl ';'                { $$ = $1; }
-    |               multi_var_decl ';'          { $$ = $1; }
     ;
 
 // ------------------------------------------------------------
@@ -123,10 +120,6 @@ var_decl:           type ident                              { $$ = new VarDeclar
     |               CONST type ident '=' expression         { $$ = new VarDeclarationNode($2, $3, $5, true); }
     ;
 
-multi_var_decl:     var_decl ',' ident                      { $$ = new MultiVarDeclarationNode($1); $$->addVar($3); }
-    |               var_decl ',' ident '=' expression       { $$ = new MultiVarDeclarationNode($1); $$->addVar($3, $5); }
-    |               multi_var_decl ',' ident                { $$ = $1; $$->addVar($3); }
-    |               multi_var_decl ',' ident '=' expression { $$ = $1; $$->addVar($3, $5); }
 
 // ------------------------------------------------------------
 //
