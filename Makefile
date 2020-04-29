@@ -24,3 +24,36 @@ all:
 	@make -s gen
 	@make -s compile
 	@make -s run
+
+
+comp_test1:
+	@make -s clear
+	./compily.out tests/test_case_1.cpp
+
+comp_test2:
+	@make -s clear
+	./compily.out tests/test_case_2.cpp
+
+comp_test3:
+	@make -s clear
+	./compily.out tests/test_case_3.cpp
+
+test1:
+	@make -s clear
+	@make -s gen
+	@make -s compile
+	@make -s comp_test1
+
+
+test2:
+	@make -s clear
+	@make -s gen
+	@make -s compile
+	@make -s comp_test2
+
+
+test3:
+	@make -s clear
+	@make -s gen
+	@make -s compile
+	@make -s comp_test3
