@@ -17,7 +17,7 @@ compile:
 		src/rules/parser.cpp
 run:
 	@make -s clear
-	./compily.out tests/test_case0.cpp
+	./compily.out tests/test_case_1.cpp
 
 all:
 	@make -s clear
