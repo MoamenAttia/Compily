@@ -6,7 +6,30 @@ string AssignOprNode::generateQuad(GenerationContext *context)
     string lhs_string = lhs->generateQuad(context);
     string rhs_string = rhs->generateQuad(context);
     string opr_string = "=";
-    return opr_string + ' ' + rhs_string + ' ' + lhs_string + '\n';
+
+    ValueNode* isValue = dynamic_cast<ValueNode*>(rhs);
+    IdentifierNode* isIdentifier = dynamic_cast<IdentifierNode*>(rhs);
+
+    if(isValue || isIdentifier){
+        return opr_string + ' ' + rhs_string + ' ' + '#' + ' ' + lhs_string + '\n';
+    } else {
+        string temp_reg = "";
+        bool done = false;
+        string ret;
+        for (int i = 0; i < rhs_string.size(); ++i) {
+            if(done) {
+                ret += rhs_string[i];
+                continue;
+            }
+            if (rhs_string[i] == ' ') {
+                done = true;
+                continue;
+            }
+            temp_reg += rhs_string[i];
+        }
+        return ret + opr_string + ' ' + temp_reg + ' ' + '#' + ' ' + lhs_string + '\n';
+    }
+
 }
 
 string BinaryOprNode::generateQuad(GenerationContext *context)
