@@ -19,4 +19,4 @@ string text = "Player: ";
 string err = text + i;
 
 char c = 'c';
-int err2 = c + i;
+int err2 = err + i;
